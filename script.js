@@ -22,25 +22,19 @@ var todoList = {
     var totalTodos = this.todos.length;
     var completedTodos = 0;
 
-    for(var i = 0; i < totalTodos; i++)
-    {
-    if(this.todos[i].completed===true) 
-    {
-    completedTodos++;
-    }
-    }     
-    if(completedTodos===totalTodos) {
-    for(var i = 0; i < totalTodos; i++) 
-      {
-      this.todos[i].completed = false;
+    this.todos.forEach(function(todo){
+      if(todo.completed===true){
+        completedTodos++;
       }
-      } 
-    else{ 
-    for(var i = 0; i<totalTodos; i++) 
-      {
-      this.todos[i].completed = true;
-      }
-     }
+    })
+       this.todos.forEach(function(todo){
+       if(completedTodos===totalTodos){
+         todo.completed=false;
+       }
+       else{
+         todo.completed=true;
+       }
+     });
     }
   };
 
@@ -61,11 +55,9 @@ var handlers =
     changeTodoTextInput.value ='';
     view.displayTodos();
     },
-    deleteTodo: function() 
+    deleteTodo: function(position) 
     {
-    var deleteTodoPositionInput = document.getElementById('deleteTodoPositionInput');
-    todoList.deleteTodo(deleteTodoPositionInput.valueAsNumber);
-    deleteTodoPositionInput.value = '';
+    todoList.deleteTodo(position);
     view.displayTodos();
     },
     toggleCompleted: function() {
@@ -99,8 +91,30 @@ var view =
     {
     todoTextWithCompletion = '( ) ' + todo.todoText;
     }
+    todoLi.id=i;
     todoLi.textContent = todoTextWithCompletion;
+    todoLi.appendChild(this.createDeleteButton());
     todosUl.appendChild(todoLi);
     }
+    },
+    createDeleteButton: function(){
+      var deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.className="deleteButton";
+      return deleteButton;
+    },
+    setUpEventListeners: function(){
+      var todosUl=document.querySelector("ul");
+      todosUl.addEventListener("click",function(event){
+      console.log(event.target.parentNode.id);
+      //Get the Element that was clicked on.
+      var elementClicked = event.target;
+      //Check if elementClicked is a delete button.
+      if (elementClicked.className==="deleteButton"){
+      handlers.deleteTodo(parseInt(elementClicked.parentNode.id));
+      }
+      });
     }
   };
+  view.setUpEventListeners();
+ 
